@@ -9,5 +9,8 @@ export function multiply(total, number){
 }
 
 export function divide(total, number){
+    if (number === 0) {
+        return 0; 
+    }
     return total/number;
 }

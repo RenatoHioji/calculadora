@@ -1,58 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { sum, divide, subtract, multiply } from './calc/math';
+import { StyleSheet, Text, View} from 'react-native';
+import { useState } from 'react';
+import ButtonCalc from "./components/buttons/button.js";
 export default function App() {
   const [currentValue, setCurrentValue] = useState('');
-  const [previousValue, setPreviousValue] = useState(0); 
-  const [operator, setOperator] = useState(null); 
-  const [result, setResult] = useState(0); 
-
+  const [result, setResult] = useState('');
   const handlePress = (value) => {
-    setCurrentValue(currentValue + value); 
+    setCurrentValue((prev) => prev + value);
   };
 
-  const handleOperator = (selectedOperator) => {
-    if (currentValue === '') return;
-    setPreviousValue(currentValue);
-    setCurrentValue('');
-    setOperator(selectedOperator); 
+  const handleOperator = (operator) => {
+    setCurrentValue((prev) => prev + ' ' + operator + ' ');
   };
 
-  const handleResult = () => {
-    if (!previousValue || !currentValue || !operator) return;
-
-    const num1 = parseFloat(previousValue);
-    const num2 = parseFloat(currentValue);
-    let finalResult = 0;
-
-    switch (operator) {
-      case '+':
-        finalResult = sum(num1, num2);
-        break;
-      case '-':
-        finalResult = subtract(num1, num2);
-        break;
-      case '*':
-        finalResult = multiply(num1, num2);
-        break;
-      case '/':
-        finalResult = divide(num1, num2);
-        break;
-      default:
-        return;
-    }
-
-    setResult(finalResult); 
-    setCurrentValue(String(finalResult)); 
-    setPreviousValue(null); 
-    setOperator(null); 
-  };
-  
   const handleReset = () => {
     setCurrentValue('');
-    setPreviousValue(null);
-    setOperator(null);
-    setResult(null);
+    setResult('');
+  };
+  const handleResult = () => {
+    try {
+      const evalResult = eval(currentValue.replace('X', '*'));
+      setResult(evalResult.toString());
+    } catch (error) {
+      setResult('Error');
+    }
   };
   return (
       <View style={styles.container}>
@@ -63,92 +34,22 @@ export default function App() {
           <Text style={styles.resultText}>{result}</Text>
           </View>
         <View style={styles.buttons}>
-        <Button
-        label="RESET"
-        style={styles.BtnWhiteGray}
-        onPress={() => handleReset()}
-      />
-      <Button
-        label="+"
-        style={styles.BtnOrange}
-        onPress={() => handleOperator('+')}
-      />
-      <Button
-        label="="
-        style={styles.BtnOrange}
-        onPress={() => handleResult()}
-      />
-      <Button
-        label="-"
-        style={styles.BtnOrange}
-        onPress={() => handleOperator('-')}
-      />
-      <Button
-        label="/"
-        style={styles.BtnOrange}
-        onPress={() => handleOperator('/')}
-      />
-      <Button
-        label="X"
-        style={styles.BtnOrange}
-        onPress={() => handleOperator('*')}
-      />
-      <Button
-        label="7"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('7')}
-      />
-      <Button
-        label="8"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('8')}
-      />
-      <Button
-        label="9"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('9')}
-      />
-
-      <Button
-        label="4"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('4')}
-      />
-      <Button
-        label="5"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('5')}
-      />
-      <Button
-        label="6"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('6')}
-      />
-      <Button
-        label="-"
-        style={styles.BtnOrange}
-        onPress={() => handleOperator('-')}
-      />
-      <Button
-        label="1"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('1')}
-      />
-      <Button
-        label="2"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('2')}
-      />
-      <Button
-        label="3"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('3')}
-      />
-      <Button
-        label="0"
-        style={styles.BtnBlackGray}
-        onPress={() => handlePress('0')}
-      />
+      <ButtonCalc label="RESET" style={styles.btnBlack} onPress={() => handleReset()}/>
+      <ButtonCalc label="+" style={styles.btnBlue} onPress={() => handleOperator('+')}/>
+      <ButtonCalc label="=" style={styles.btnBlue} onPress={handleResult}/>
+      <ButtonCalc label="-" style={styles.btnBlue} onPress={() => handleOperator('-')}/>
+      <ButtonCalc label="/" style={styles.btnBlue} onPress={() => handleOperator('/')}/>
+      <ButtonCalc label="X" style={styles.btnBlue}onPress={() => handleOperator('*')}/>
+      <ButtonCalc label="0" style={styles.btnBlack}onPress={() => handlePress('0')}/>
+      <ButtonCalc label="1" style={styles.btnBlack}onPress={() => handlePress('1')}/>
+      <ButtonCalc label="2" style={styles.btnBlack} onPress={() => handlePress('2')}/>
+      <ButtonCalc label="3" style={styles.btnBlack} onPress={() => handlePress('3')}/>
+      <ButtonCalc label="4" style={styles.btnBlack} onPress={() => handlePress('4')}/>
+      <ButtonCalc label="5" style={styles.btnBlack} onPress={() => handlePress('5')}/>
+      <ButtonCalc label="6" style={styles.btnBlack} onPress={() => handlePress('6')}/>
+      <ButtonCalc label="7" style={styles.btnBlack} onPress={() => handlePress('7')}/>
+      <ButtonCalc label="8" style={styles.btnBlack} onPress={() => handlePress('8')}/>
+      <ButtonCalc label="9" style={styles.btnBlack} onPress={() => handlePress('9')}/>
       </View>
         
         <StatusBar style="auto" />
@@ -156,11 +57,13 @@ export default function App() {
     );
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'black',
+    backgroundColor: '#000000',
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',
@@ -168,7 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end'
   },
   buttons: {
-    backgroundColor: 'black',
+    backgroundColor: '#000000',
     width: '100%',
     height: '65%',
     display: 'flex',
@@ -178,7 +81,7 @@ const styles = StyleSheet.create({
     gap: 10,
     flexWrap: 'wrap'
   },
-  BtnBlackGray: {
+  btnBlack: {
     backgroundColor: '#28282a',
     display: 'flex',
     justifyContent: 'center',
@@ -187,17 +90,8 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 100
   },
-  BtnWhiteGray: {
-    backgroundColor: '#5c5c5e',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 90,
-    height: 80,
-    borderRadius: 100
-  },
-  BtnOrange: {
-    backgroundColor: 'orange',
+  btnBlue: {
+    backgroundColor: '#007FFF',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -207,12 +101,12 @@ const styles = StyleSheet.create({
   },
   textBtn: {
     fontSize: 27,
-    color: 'white'
+    color: '#FFFFFF'
   },
   resultDiv: {
     width: '100%',
     height: 90,
-    backgroundColor: 'black',
+    backgroundColor: '#000000',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-end',
@@ -225,7 +119,7 @@ const styles = StyleSheet.create({
   calcDiv: {
     width: '100%',
     height: 90,
-    backgroundColor: 'black',
+    backgroundColor: '#000000',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-end',
